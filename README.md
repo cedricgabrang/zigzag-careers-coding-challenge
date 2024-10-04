@@ -75,3 +75,7 @@ Get started with the project:
 
 ## API Key
 The API key can be found in the `Library.API/appsettings.json` file
+
+## Preview
+![image](https://github.com/user-attachments/assets/c35cf704-7aea-43fb-8e58-933fb7de7a5c)
+
