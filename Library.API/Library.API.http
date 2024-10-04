@@ -1,0 +1,5 @@
+﻿@Library.API_HostAddress = https://localhost:7153
+
+GET {{Library.API_HostAddress}}/books
+
+###

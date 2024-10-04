@@ -1,0 +1,90 @@
+﻿@page "/books/edit/{bookId:int?}"
+@rendermode InteractiveServer
+@    using Library.Domain.Entities
+@    using Library.Shared.DTOs
+@    using Library.Web.Services
+@inject IBookService BookService
+@inject BookStateService BookState
+@inject NavigationManager Navigation
+
+<div class="container mx-auto p-6">
+    <div class="max-w-lg mx-auto bg-white shadow-md rounded-lg p-8">
+        <h3 class="text-3xl font-bold text-center mb-6">@((bookId.HasValue ? "Edit Book" : "Add Book"))</h3>
+
+        <EditForm Model="@Book" OnValidSubmit="HandleValidSubmit" FormName="BookEditForm">
+            <div class="mb-4">
+                <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
+                <InputText id="title" class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-500" @bind-Value="Book.Title" />
+            </div>
+
+            <div class="mb-4">
+                <label for="author" class="block text-sm font-medium text-gray-700">Author</label>
+                <InputText id="author" class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-500" @bind-Value="Book.Author" />
+            </div>
+
+            <div class="mb-4">
+                <label for="isbn" class="block text-sm font-medium text-gray-700">ISBN</label>
+                <InputText id="isbn" class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-500" @bind-Value="Book.ISBN" />
+            </div>
+
+            <div class="mb-4">
+                <label for="publishedDate" class="block text-sm font-medium text-gray-700">Published Date</label>
+                <InputDate id="publishedDate" class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-500" @bind-Value="PublishedDate" />
+            </div>
+
+            <div class="flex justify-end space-x-2">
+                <button type="button" class="bg-gray-400 text-white px-4 py-2 rounded-md hover:bg-gray-500" @onclick="NavigateToList">Cancel</button>
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-200">@((bookId.HasValue ? "Update" : "Create"))</button>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int? bookId { get; set; }
+
+    public BookWithId Book { get; set; } = new();
+
+    private DateTime? PublishedDate
+    {
+        get => DateTime.TryParse(Book.PublishedDate, out var date) ? date : (DateTime?)null;
+        set => Book.PublishedDate = value?.ToString("yyyy-MM-dd");
+    }
+
+    protected override void OnInitialized()
+    {
+        Book = bookId.HasValue ? BookState.CurrentBook : new BookWithId();
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        if (bookId.HasValue)
+        {
+            await BookService.UpdateBookAsync(bookId.Value, new Book
+                {
+                    Author = Book.Author,
+                    Title = Book.Title,
+                    PublishedDate = Book.PublishedDate,
+                    ISBN = Book.ISBN
+                });
+        }
+        else
+        {
+            await BookService.AddBookAsync(new Book
+                {
+                    Author = Book.Author,
+                    Title = Book.Title,
+                    PublishedDate = Book.PublishedDate,
+                    ISBN = Book.ISBN
+                });
+        }
+
+        NavigateToList();
+    }
+
+    private void NavigateToList()
+    {
+        Navigation.NavigateTo("/");
+    }
+}
