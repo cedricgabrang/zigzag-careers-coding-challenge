@@ -1,8 +1,8 @@
 ﻿@page "/books/edit/{bookId:int?}"
 @rendermode InteractiveServer
-@    using Library.Domain.Entities
-@    using Library.Shared.DTOs
-@    using Library.Web.Services
+@using Library.Domain.Entities
+@using Library.Shared.DTOs
+@using Library.Web.Services
 @inject IBookService BookService
 @inject BookStateService BookState
 @inject NavigationManager Navigation
